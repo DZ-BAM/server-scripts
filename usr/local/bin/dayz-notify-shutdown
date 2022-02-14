@@ -28,12 +28,13 @@ def main():
     with Client(
             rcon_config.get('RConIP', '127.0.0.1'),
             rcon_config.get('RConPort', 2302),
-            timeout=10
+            passwd=passwd,
+            timeout=0.5
     ) as client:
         for passed in range(args.gracetime):
-            client.login(passwd)
             client.run(COMMAND.format(args.gracetime - passed))
             sleep(1)
+            client.login(passwd)
 
         for player in range(max_players):
             client.run(f'kick {player} Server restart')
