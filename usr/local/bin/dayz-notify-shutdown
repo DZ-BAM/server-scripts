@@ -11,7 +11,7 @@ from dzdsu.server import load_servers
 from rcon.battleye import Client
 
 
-COMMAND = 'Say -1 Server goes down for maintenance in {}!'
+COMMAND = 'Say -1 Server is going down for maintenance in {}!'
 PARSER = ArgumentParser(description=__doc__)
 PARSER.add_argument('server', help='server name')
 PARSER.add_argument('gracetime', type=int, help='grace time in seconds')
