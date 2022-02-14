@@ -1,0 +1,58 @@
+#! /usr/bin/env python3
+"""Server shutdown notification script."""
+
+from argparse import ArgumentParser
+from pathlib import Path
+from time import sleep
+from typing import Iterator
+
+from dzdsu.constants import JSON_FILE
+from dzdsu.server import load_servers
+from rcon.battleye import Client
+
+
+COMMAND = 'Say -1 Server goes down for maintenance in {}!'
+PARSER = ArgumentParser(description=__doc__)
+PARSER.add_argument('server', help='server name')
+PARSER.add_argument('gracetime', type=int, help='grace time in seconds')
+
+
+def read_rcon_config(filename: Path) -> Iterator[tuple[str, str]]:
+    """Reads the RCon configuration."""
+
+    with filename.open('r', encoding='ascii') as file:
+        for line in file:
+            if (line := line.strip()) and not line.startswith('#'):
+                key, value = line.split(maxsplit=1)
+
+                if key == 'RConPort':
+                    value = int(value)
+                elif key == 'RestrictRCon':
+                    value = bool(int(value))
+
+                yield key, value
+
+
+def main():
+    """Runs the script."""
+
+    args = PARSER.parse_args()
+    servers = load_servers(JSON_FILE)
+    server = servers[args.server]
+    rcon_config_file = list(server.base_dir.glob('battleye/*.cfg'))[0]
+    rcon_config = dict(read_rcon_config(rcon_config_file))
+    passwd = rcon_config['RConPassword']
+
+    with Client(
+            rcon_config.get('RConIP', '127.0.0.1'),
+            rcon_config.get('RConPort', 2302),
+            timeout=10
+    ) as client:
+        for passed in range(args.gracetime):
+            client.login(passwd)
+            client.run(COMMAND.format(args.gracetime - passed - 1))
+            sleep(1)
+
+
+if __name__ == '__main__':
+    main()
