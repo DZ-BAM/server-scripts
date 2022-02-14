@@ -18,57 +18,15 @@ PARSER.add_argument('server', help='server name')
 PARSER.add_argument('gracetime', type=int, help='grace time in seconds')
 
 
-def parse_rcon_value(key: str, value: str) -> bool | int | str:
-    """Parses an RCon config value."""
-
-    if key == 'RConPort':
-        return int(value)
-
-    if key == 'RestrictRCon':
-        return bool(int(value))
-
-    return value
-
-
-def read_rcon_config(filename: Path) -> Iterator[tuple[str, str]]:
-    """Reads the RCon configuration."""
-
-    with filename.open('r', encoding='ascii') as file:
-        for line in file:
-            if (line := line.strip()) and not line.startswith('#'):
-                key, value = line.split(maxsplit=1)
-                yield key, parse_rcon_value(key, value)
-
-
-def get_max_players(filename: Path) -> int:
-    """Returns the max players amount."""
-
-    with filename.open('r', encoding='utf-8') as file:
-        for line in file:
-            if not (line := line.strip()):
-                continue
-
-            if (match := fullmatch(CFG_REGEX, line)) is None:
-                continue
-
-            key, value = match.groups()
-
-            if key == 'maxPlayers':
-                return int(value)
-
-    raise ValueError('Config setting "maxPlayers" not found.')
-
-
 def main():
     """Runs the script."""
 
     args = PARSER.parse_args()
     servers = load_servers(JSON_FILE)
     server = servers[args.server]
-    rcon_config_file = list(server.base_dir.glob('battleye/*.cfg'))[0]
-    rcon_config = dict(read_rcon_config(rcon_config_file))
+    rcon_config = server.battleye_cfg
     passwd = rcon_config['RConPassword']
-    max_players = get_max_players(server.base_dir / 'serverDZ.cfg')
+    max_players = server.config.getint('maxPlayers')
 
     with Client(
             rcon_config.get('RConIP', '127.0.0.1'),
