@@ -2,16 +2,13 @@
 """Server shutdown notification script."""
 
 from argparse import ArgumentParser
-from pathlib import Path
-from re import fullmatch
 from time import sleep
-from typing import Iterator
 
 from dzdsu.constants import JSON_FILE
 from dzdsu.server import load_servers
 from rcon.battleye import Client
 
-CFG_REGEX = r'^(\w+)\s*=\s*(\w+);.*'
+
 COMMAND = 'say -1 Server is going down for maintenance in {}!'
 PARSER = ArgumentParser(description=__doc__)
 PARSER.add_argument('server', help='server name')
