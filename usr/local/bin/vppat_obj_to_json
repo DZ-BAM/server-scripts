@@ -11,7 +11,7 @@ from re import Match, fullmatch
 from typing import Iterable, Iterator, NamedTuple
 
 
-REGEX = r'SpawnObject\(\s"(.+)",\s"(.*)\s(.*)\s(.*)",\s"(.*)\s(.*)\s(.*)"\s\);'
+REGEX = r'SpawnObject\(\s"(.+)",\s"(.+)\s(.+)\s(.+)",\s"(.+)\s(.+)\s(.+)"\s\);'
 
 
 class Vector3d(NamedTuple):
