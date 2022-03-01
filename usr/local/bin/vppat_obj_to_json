@@ -57,7 +57,7 @@ def read_file(filename: Path) -> Iterator[SpawnObject]:
     
     with filename.open('r', encoding='ascii') as file:
         for line in file:
-            if match := fullmatch(REGEX, line := line.strip()):
+            if match := fullmatch(REGEX, line.strip()):
                 yield SpawnObject.from_regex(match)
 
 
@@ -76,7 +76,7 @@ def parse_args(description: str = __doc__) -> Namespace:
     return parser.parse_args()
 
 
-def main() -> int:
+def main() -> None:
     """Runs the main program."""
     
     args = parse_args()
