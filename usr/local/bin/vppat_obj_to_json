@@ -53,7 +53,7 @@ class SpawnObject(NamedTuple):
 
 
 def read_file(filename: Path) -> Iterator[SpawnObject]:
-    """Reads the given file into a SpawnObject."""
+    """Reads the given file into SpawnObjects."""
     
     with filename.open('r', encoding='ascii') as file:
         for line in file:
